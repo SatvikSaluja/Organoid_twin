@@ -197,9 +197,23 @@ class PlateStreamManager:
 
         self.model.eval()
         with torch.no_grad():
+            # Chunked rather than one pass over the whole reference set: dense
+            # GATv2 attention materializes a (batch, N, N, heads) tensor, so
+            # memory scales with batch size -- a single unbatched forward
+            # over all ~300 reference samples permanently grows the process's
+            # RSS by ~200MB (PyTorch's CPU allocator caches the peak rather
+            # than releasing it), which is enough on its own to OOM a 512MB
+            # container. A small chunk size keeps that peak bounded no matter
+            # how large EWC_REFERENCE_PLATES gets.
             ref_x, ref_h, _, _ = self._reference_dataset.tensors
-            val_pred, _ = self.model(ref_x, PLATE_ADJACENCY)
-            val_loss = torch.nn.functional.mse_loss(val_pred, ref_h).item()
+            REF_VAL_CHUNK = 16
+            total_sq_err, n_seen = 0.0, 0
+            for start in range(0, ref_x.shape[0], REF_VAL_CHUNK):
+                xb, hb = ref_x[start:start + REF_VAL_CHUNK], ref_h[start:start + REF_VAL_CHUNK]
+                pred, _ = self.model(xb, PLATE_ADJACENCY)
+                total_sq_err += torch.nn.functional.mse_loss(pred, hb, reduction="sum").item()
+                n_seen += hb.numel()
+            val_loss = total_sq_err / max(1, n_seen)
         self.calibration_history.append(CalibrationPoint(
             timestamp=datetime.now(timezone.utc),
             sim_hours=self.plate.t * 0.5,
