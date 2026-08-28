@@ -255,6 +255,38 @@ VITE_WS_URL=ws://localhost:8010/ws/plate VITE_API_URL=http://localhost:8010 npm 
 .venv/bin/python -m eval.plots                     # writes eval/plots/*.png
 ```
 
+## Deploying it
+
+Backend on Render, frontend on Netlify — both free tiers. `render.yaml` and
+`netlify.toml` in the repo root record the exact settings used.
+
+**Backend (Render, web service, Python runtime):**
+- Build command: `pip install -r backend/requirements.txt`
+- Start command: `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
+- The trained checkpoints (`backend/gnn/checkpoints/*.pt`) are committed to
+  the repo rather than trained at build time — there's no GPU or spare build
+  minutes on a free plan for a several-minute CPU training run on every
+  deploy, so the backend just loads the checkpoint that's already there.
+- `CORS_EXTRA_ORIGINS` (comma-separated) can add specific allowed origins;
+  any `*.netlify.app` origin is already allowed via a regex, so a first
+  deploy works without setting this.
+
+**Frontend (Netlify, static site, build from `frontend/`):**
+- Build command: `npm run build`, publish directory: `dist` (both picked up
+  automatically from `netlify.toml`).
+- Set `VITE_API_URL` and `VITE_WS_URL` in the site's environment variables to
+  the deployed backend's address, e.g. `https://<your-backend>.onrender.com`
+  and `wss://<your-backend>.onrender.com/ws/plate`.
+
+**Caveats, since this is a free-tier deploy of a demo, not production
+infrastructure:**
+- Render's free plan spins the backend down after inactivity — the first
+  request after a while can take up to ~a minute while it wakes back up.
+- SQLite (`backend/data/organoid_twin.db`, used by the cohort-analytics
+  database) lives on local disk and is **not persisted** across deploys or
+  restarts on a free plan — every deploy starts from an empty database. Fine
+  for a demo; would need a persistent disk or a managed Postgres otherwise.
+
 ## Design notes
 
 **Relationship to an earlier side project.** The metabolic simulation
