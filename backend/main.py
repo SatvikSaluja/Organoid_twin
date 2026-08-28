@@ -14,6 +14,16 @@ and database-backed cohort analytics.
 import asyncio
 import dataclasses
 import os
+
+# Must happen before `import torch` (transitively, via the backend imports
+# below) ever runs. Small hosted containers (e.g. Render's free plan) report
+# a host CPU count far higher than the CPU share they actually grant, and
+# torch's default of spinning up one OpenMP thread per reported core turns
+# thread-pool setup into a multi-minute stall under real throttling — this
+# pins it to a single thread instead, which is plenty for a 24-node plate.
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("MKL_NUM_THREADS", "1")
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, File, HTTPException, UploadFile, WebSocket, WebSocketDisconnect
