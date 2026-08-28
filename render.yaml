@@ -1,0 +1,23 @@
+# Render Blueprint for the OrganoidTwin backend. Documents the exact service
+# config (also created directly via the Render API for this deploy) so it
+# can be reproduced with "New -> Blueprint" pointed at this repo if needed.
+#
+# NOTE: SQLite lives on local disk (backend/data/organoid_twin.db) and is
+# NOT persisted across deploys/restarts on Render's free plan — every deploy
+# starts from a fresh, empty database. Add a paid persistent disk (or swap
+# ORGANOID_DB_URL for a managed Postgres) if that matters for your use case.
+services:
+  - type: web
+    name: organoid-twin-backend
+    runtime: python
+    plan: free
+    branch: main
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: CORS_EXTRA_ORIGINS
+        value: ""
+      - key: ORGANOID_WS_INTERVAL
+        value: "1.0"

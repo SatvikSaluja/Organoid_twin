@@ -1,0 +1,8 @@
+# Netlify build config for the frontend. Import this repo in the Netlify
+# dashboard ("Add new project" -> "Import an existing project") and these
+# settings are auto-detected — the only manual step left is setting
+# VITE_API_URL / VITE_WS_URL (see README) to the deployed backend's address.
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"

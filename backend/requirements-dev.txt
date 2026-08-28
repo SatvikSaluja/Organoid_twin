@@ -1,0 +1,4 @@
+# Extra dependencies for local development / eval scripts only.
+# Not installed in the deployed backend (see requirements.txt).
+-r requirements.txt
+matplotlib>=3.9

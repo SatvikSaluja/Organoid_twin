@@ -13,6 +13,7 @@ and database-backed cohort analytics.
 """
 import asyncio
 import dataclasses
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, File, HTTPException, UploadFile, WebSocket, WebSocketDisconnect
@@ -49,10 +50,20 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="OrganoidTwin API", lifespan=lifespan)
 
-# Vite's default dev server port (5173) plus the alternate port used in local testing.
+# Vite's default dev server port (5173) plus the alternate port used in local
+# testing, always allowed. Add the deployed frontend's exact origin via the
+# CORS_EXTRA_ORIGINS env var (comma-separated) once it's known; any Netlify
+# subdomain (preview or prod) is allowed automatically via the regex below so
+# a first deploy doesn't need this env var set at all.
+_default_origins = [
+    "http://localhost:5173", "http://127.0.0.1:5173",
+    "http://localhost:5180", "http://127.0.0.1:5180",
+]
+_extra_origins = [o.strip() for o in os.environ.get("CORS_EXTRA_ORIGINS", "").split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5180", "http://127.0.0.1:5180"],
+    allow_origins=_default_origins + _extra_origins,
+    allow_origin_regex=r"https://.*\.netlify\.app",
     allow_methods=["*"],
     allow_headers=["*"],
 )

@@ -3,7 +3,10 @@
 __pycache__/
 *.pyc
 backend/data/
-backend/gnn/checkpoints/
+
+# Trained GNN checkpoints ARE committed (small, ~600KB each) — the deployed
+# backend has no training step at build time, so it loads these directly.
+# See backend/gnn/train.py to regenerate them if the architecture changes.
 
 # Node / frontend
 frontend/node_modules/
