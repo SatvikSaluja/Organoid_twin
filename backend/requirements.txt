@@ -1,0 +1,19 @@
+fastapi>=0.115
+uvicorn[standard]>=0.32
+pydantic>=2.9
+sqlalchemy>=2.0
+websockets>=13.0
+numpy>=1.26
+python-multipart>=0.0.9   # CSV/file upload endpoints (backend/analysis/csv_ingest.py)
+
+# GNN fusion model, training, EWC continual adaptation, bifurcation detector.
+# CPU-only build (install with --index-url https://download.pytorch.org/whl/cpu
+# for a much smaller download; no GPU needed anywhere in this project):
+torch>=2.4
+
+# Kaplan-Meier/log-rank (analysis/survival.py), dose-response curve fitting
+# (analysis/dose_response.py), uncertainty-calibration eval:
+scipy>=1.11
+
+# eval/plots.py only:
+matplotlib>=3.9

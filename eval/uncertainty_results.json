@@ -1,0 +1,38 @@
+{
+  "n_samples": 11664,
+  "spearman_std_vs_error": 0.643328072787567,
+  "spearman_p_value": 0.0,
+  "reliability_bins": [
+    {
+      "mean_predicted_std": 0.009960820898413658,
+      "mean_abs_error": 0.01058913962962641,
+      "n": 2333
+    },
+    {
+      "mean_predicted_std": 0.01751478761434555,
+      "mean_abs_error": 0.021254557086673127,
+      "n": 2333
+    },
+    {
+      "mean_predicted_std": 0.027035236358642578,
+      "mean_abs_error": 0.03239472656964894,
+      "n": 2333
+    },
+    {
+      "mean_predicted_std": 0.03910881280899048,
+      "mean_abs_error": 0.04879690214030945,
+      "n": 2333
+    },
+    {
+      "mean_predicted_std": 0.0669429823756218,
+      "mean_abs_error": 0.10302947778152138,
+      "n": 2332
+    }
+  ],
+  "coverage_1sigma": 0.5808470507544582,
+  "coverage_1sigma_target": 0.68,
+  "coverage_2sigma": 0.8537379972565158,
+  "coverage_2sigma_target": 0.95,
+  "mean_predicted_std": 0.032109543681144714,
+  "mean_abs_error": 0.043207832339331925
+}

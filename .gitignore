@@ -1,0 +1,14 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+backend/data/
+backend/gnn/checkpoints/
+
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+
+# Misc
+.env
+*.log
